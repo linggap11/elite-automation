@@ -44,6 +44,10 @@ class Reports extends BaseController
         }
 
         $user = $this->userModel->find($userId);
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
 
         $totalInvest = $this->investmentModel->totalClientInvestment();
         $totalFulfilled = $this->reportModel->totalFulfilled();
@@ -53,7 +57,7 @@ class Reports extends BaseController
         $costUnderOnek = $this->db->query("SELECT investments.client_id, users.fullname, investments.date as investment_date, investments.status, users.company, investments.cost as client_cost, total_retail, total_unit, total_fulfilled, investments.cost - cost_ as cost_left FROM investments LEFT JOIN (SELECT SUM(reports.qty) as total_unit, SUM(reports.original_value) as total_retail, SUM(reports.cost) as total_fulfilled, SUM(IFNULL(reports.cost, 0)) as cost_, investment_id FROM reports GROUP BY reports.investment_id ) as rep  ON investments.id = rep.investment_id JOIN users ON users.id = investments.client_id WHERE (investments.cost - cost_) BETWEEN 1 AND 1000 ORDER BY (investments.cost - cost_) ASC");
         $news = $this->newsModel->getLastNews();
         $getBoxCost = $this->assignReportModel->getCostBox();
-        $companysetting = $this->db->query("SELECT * FROM company")->getRow();
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site = '$comp' ")->getRow();
         $tempBoxSummary = array();
         $temp_date = "";
         $counter = 1;
@@ -166,12 +170,16 @@ class Reports extends BaseController
         if (is_null($userId)) {
             return view('login');
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
         $user = $this->userModel->find($userId);
         $totalClientUploaded = $this->reportModel->totalClientUploaded();
         $totalReport = $this->reportModel->totalReport();
         $getAllFiles = $this->reportModel->getAllFiles();
         $getAllClient = $this->reportModel->getAllClient();
-        $companysetting = $this->db->query("SELECT * FROM company")->getRow();
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site='$comp' ")->getRow();
 
         $data = [
             'tittle' => 'Client Activities | Report Management System',
@@ -294,13 +302,17 @@ class Reports extends BaseController
         if (is_null($userId)) {
             return view('login');
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
         $user = $this->userModel->find($userId);
         $totalClientUploaded = $this->reportModel->totalClientUploaded();
         $totalReport = $this->reportModel->totalReport();
         $getAllFiles = $this->reportModel->getPLReport();
         $getAllClient = $this->reportModel->getAllClient();
         $getBulk = $this->reportModel->getBulkUploaded();
-        $companysetting = $this->db->query("SELECT * FROM company")->getRow();
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site='$comp' ")->getRow();
 
         $data = [
             'tittle' => 'P&L Report | Report Management System',
@@ -477,6 +489,11 @@ class Reports extends BaseController
         if (is_null($userId)) {
             return view('login');
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
+
         $user = $this->userModel->find($userId);
         $getAllClient = $this->assignReportModel->getAllClient();
         $getAllVA = $this->assignReportModel->getAllVA();
@@ -485,7 +502,7 @@ class Reports extends BaseController
         $getAllAssignReportPending = $this->assignReportModel->getAllAssignReportProcess($userId, $user['role']);
         $getAllAssignReportCompleted = $this->assignReportModel->getAllAssignReportCompleted();
         $getWeeks = $this->assignReportModel->getWeeks();
-        $companysetting = $this->db->query("SELECT * FROM company")->getRow();
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site='$comp' ")->getRow();
         $getUsers = $this->userModel->where('role', 'client')->orderBy('fullname', 'ASC')->get();
         $getBrands = $this->categoryModel->getBrands();
         
@@ -684,9 +701,14 @@ class Reports extends BaseController
         if (is_null($userId)) {
             return view('login');
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
+        
         $user = $this->userModel->find($userId);
         $getAllInvestment = $this->investmentModel->getAllInvestment($status);
-        $companysetting = $this->db->query("SELECT * FROM company")->getRow();
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site='$comp' ")->getRow();
         $data = [
             'tittle' => 'Assignment Reports: Checklist Report | Report Management System',
             'menu' => 'Checklist Report',
@@ -857,10 +879,14 @@ class Reports extends BaseController
         if (is_null($userId)) {
             return view('login');
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
         $user = $this->userModel->find($userId);
         $getAllClient = $this->assignReportModel->getAllClient();
         $getAllAssignReportProcess = $this->assignReportModel->getAllAssignReportProcess($userId, $user['role']);
-        $companysetting = $this->db->query("SELECT * FROM company")->getRow();
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site='$comp' ")->getRow();
         $data = [
             'tittle' => 'Assignment Reports | Report Management System',
             'menu' => 'APPROVAL BOX ASSIGNMENT',
@@ -911,9 +937,13 @@ class Reports extends BaseController
         if (is_null($userId)) {
             return view('login');
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
         $user = $this->userModel->find($userId);
         $assignCompleted = $this->assignReportModel->getAllAssignReportCompleted();
-        $companysetting = $this->db->query("SELECT * FROM company")->getRow();
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site='$comp' ")->getRow();
         $data = [
             'tittle' => 'Assignment Reports | Report Management System',
             'menu' => 'APPROVAL BOX ASSIGNMENT',
@@ -937,10 +967,14 @@ class Reports extends BaseController
         if (is_null($userId)) {
             return view('login');
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
         $user = $this->userModel->find($userId);
         $assignCompleted = $this->assignReportModel->getAllAssignReportCompleted();
         $getAllVA = $this->assignReportModel->getAllVA();
-        $companysetting = $this->db->query("SELECT * FROM company")->getRow();
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site='$comp' ")->getRow();
         $data = [
             'tittle' => 'Assignment Reports | Report Management System',
             'menu' => 'APPROVAL BOX ASSIGNMENT',
@@ -966,9 +1000,17 @@ class Reports extends BaseController
         if (is_null($userId)) {
             return view('login');
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
         $user = $this->userModel->find($userId);
         $completedInvestments = $this->investmentModel->completedInvestments();
-        $companysetting = $this->db->query("SELECT * FROM company")->getRow();
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site='$comp' ")->getRow();
         $data = [
             'tittle' => 'Completed Assignments | Report Management System',
             'menu' => 'COMPLETED ASSIGNMENTS',
@@ -1294,10 +1336,14 @@ class Reports extends BaseController
         if (is_null($userId)) {
             return view('login');
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
         $user = $this->userModel->find($userId);
         $getUsers = $this->userModel->where('role', 'client')->orderBy('fullname', 'ASC')->get();
         $getBrands = $this->categoryModel->getBrands();
-        $companysetting = $this->db->query("SELECT * FROM company")->getRow();
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site='$comp' ")->getRow();
         $data = [
             'tittle' => 'Brand Approval | Report Management System',
             'menu' => 'Brand Approval',
@@ -1343,9 +1389,13 @@ class Reports extends BaseController
     }
 
     public function getClientBrand()
-    {
-        $id = $this->request->getVar('brandid');
-        $users = $this->userModel->getAllUser();
+    {        
+        $underComp = 1;
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {         
+            $underComp = 2;
+        }
+        $id = $this->request->getVar('brandid');    
+        $users = $this->userModel->getAllUser($underComp);
         $selectedBrand = $this->categoryModel->selectedClient($id);
         $temp_brand = array();
         $check = 0;

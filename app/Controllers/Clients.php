@@ -31,8 +31,13 @@ class Clients extends BaseController
         if (is_null($userId)) {
             return redirect()->to(base_url('/login'));
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
         $user = $this->userModel->find($userId);
         $investId = $this->investmentModel->getInvestmentId($userId);
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site = '$comp' ")->getRow();
         // dd($investId);
         $dateId = $this->request->getVar('investdate');
         $news = $this->newsModel->getLastNews();
@@ -85,7 +90,8 @@ class Clients extends BaseController
             'investDate' => $investmentDate,
             'lastInvestment' => $lastInvestment,
             'getVendorName' => $getVendorName,
-            'news' => $news
+            'news' => $news,
+            'companySetting' => $companysetting
         ];
         return view('client/dashboard', $data);
     }
@@ -96,11 +102,17 @@ class Clients extends BaseController
         if (is_null($userId)) {
             return redirect()->to(base_url('/login'));
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site = '$comp' ")->getRow();
         $user = $this->userModel->find($userId);
         $data = [
             'tittle' => "Account Setting | Report Management System",
             'menu' => $user['fullname'] . "'s Setting",
-            'user' => $user
+            'user' => $user,
+            'companySetting' => $companysetting
         ];
 
         return view('client/account_setting', $data);
@@ -126,6 +138,7 @@ class Clients extends BaseController
                         "company" => $post['company'],
                         "address" => $post['address'],
                         "photo" => $fileName,
+                        "under_comp" => $post['under_comp'],
                         "password" => password_hash($post['new_password'], PASSWORD_BCRYPT),
                     ));
                 } else {
@@ -134,6 +147,7 @@ class Clients extends BaseController
                         "fullname" => $post['fullname'],
                         "company" => $post['company'],
                         "address" => $post['address'],
+                        "under_comp" => $post['under_comp'],
                         "password" => password_hash($post['new_password'], PASSWORD_BCRYPT),
                     ));
                 }
@@ -148,6 +162,7 @@ class Clients extends BaseController
                     "company" => $post['company'],
                     "address" => $post['address'],
                     "photo" => $fileName,
+                    "under_comp" => $post['under_comp']
                 ));
             } else {
                 $this->userModel->save(array(
@@ -155,6 +170,7 @@ class Clients extends BaseController
                     "fullname" => $post['fullname'],
                     "company" => $post['company'],
                     "address" => $post['address'],
+                    "under_comp" => $post['under_comp']
                 ));
             }
         }
@@ -167,11 +183,17 @@ class Clients extends BaseController
         if (is_null($userId)) {
             return redirect()->to(base_url('/login'));
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
         $user = $this->userModel->find($userId);
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site = '$comp' ")->getRow();
         $data = [
             'tittle' => "Purchase Inventory | Report Management System",
             'menu' => "Purchase Inventory",
-            'user' => $user
+            'user' => $user,
+            'companySetting' => $companysetting
         ];
 
         return view('client/purchase_inventory', $data);
@@ -183,7 +205,12 @@ class Clients extends BaseController
         if (is_null($userId)) {
             return redirect()->to(base_url('/login'));
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
         $user = $this->userModel->find($userId);
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site = '$comp' ")->getRow();
         $plReport = $this->reportModel->showPLReport($userId);
         $downloadPLReport = $this->reportModel->downloadPLReport($userId);
         $data = [
@@ -191,7 +218,8 @@ class Clients extends BaseController
             'menu' => "P&L Report",
             'user' => $user,
             'plReport' => $plReport,
-            'file' => $downloadPLReport
+            'file' => $downloadPLReport,
+            'companySetting' => $companysetting
         ];
         return view('client/pl_report', $data);
     }
@@ -207,7 +235,12 @@ class Clients extends BaseController
         if (is_null($userId)) {
             return redirect()->to(base_url('/login'));
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
         $user = $this->userModel->find($userId);
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site = '$comp' ")->getRow();
         $getClientCostLeft = $this->reportModel->getClientCostLeft($userId);
         $monthdiff = $this->investmentModel->monthDiff($userId);
 
@@ -216,7 +249,8 @@ class Clients extends BaseController
             'menu' => "Get Started",
             'user' => $user,
             'costLeft' => $getClientCostLeft,
-            'monthDiff' => $monthdiff
+            'monthDiff' => $monthdiff,
+            'companySetting' => $companysetting
         ];
         return view('client/getstarted', $data);
     }
@@ -227,6 +261,11 @@ class Clients extends BaseController
         if (is_null($userId)) {
             return redirect()->to(base_url('/login'));
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site = '$comp' ")->getRow();
         $brands = $this->categoryModel->getBrands();
         $user = $this->userModel->find($userId);
         $selectedBrand = $this->categoryModel->selectedBrand($userId);
@@ -258,7 +297,8 @@ class Clients extends BaseController
             'tittle' => "Brand Approvals | Report Management System",
             'menu' => "Brand Approvals",
             'user' => $user,
-            'brands' => $temp_brand
+            'brands' => $temp_brand,
+            'companySetting' => $companysetting
         ];
         return view('client/brand_approvals', $data);
     }

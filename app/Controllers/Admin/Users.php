@@ -20,9 +20,15 @@ class Users extends BaseController
         if (is_null($userId)) {
             return view('login');
         }
+        $comp = 'swclient';
+        $underComp = 1;
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+            $underComp = 2;
+        }
         $user = $this->userModel->find($userId);
-        $getAllUsers = $this->userModel->getAllUser();
-        $companysetting = $this->db->query("SELECT * FROM company")->getRow();
+        $getAllUsers = $this->userModel->getAllUser($underComp);
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site='$comp' ")->getRow();
         $data = [
             'tittle' => 'User Managment | Report Management System',
             'menu'  => 'User Management',
@@ -44,6 +50,7 @@ class Users extends BaseController
             "address" => $post['address'],
             "username" => $post['username'],
             "role" => $post['role'],
+            "under_comp" => $post['under_comp'],
             "password" => password_hash($post['new_password'], PASSWORD_BCRYPT),
         ));
         return redirect()->back()->with('success', 'User Successfully Created!');
@@ -55,12 +62,18 @@ class Users extends BaseController
         if (is_null($userId)) {
             return redirect()->to(base_url('/login'));
         }
+        $comp = 'swclient';
+        
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+            
+        }
         $user = $this->userModel->find($userId);
         $profile = $this->userModel->find($id);
-        $companysetting = $this->db->query("SELECT * FROM company")->getRow();
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site='$comp' ")->getRow();
         $data = [
             'tittle' => "Account Setting | Report Management System",
-            'menu' => $user['fullname'] . "'s Setting",
+            'menu' => "User Setting",
             'user' => $user,
             'profile' => $profile,
             'companySetting' => $companysetting

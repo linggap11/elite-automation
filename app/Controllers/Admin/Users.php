@@ -121,8 +121,12 @@ class Users extends BaseController
         if (is_null($userId)) {
             return redirect()->to(base_url('/login'));
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
         $user = $this->userModel->find($userId);
-        $companysetting = $this->db->query("SELECT * FROM company")->getRow();
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site='$comp' ")->getRow();
         $data = [
             'tittle' => "Account Setting | Report Management System",
             'menu' => $user['fullname'] . "'s Setting",
@@ -138,10 +142,14 @@ class Users extends BaseController
         if (is_null($userId)) {
             return redirect()->to(base_url('/login'));
         }
-        $company = $this->db->query("SELECT * FROM company")->getRowArray();
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
+        $company = $this->db->query("SELECT * FROM company WHERE site='$comp' ")->getRowArray();
         // dd($company);
         $user = $this->userModel->find($userId);
-        $companysetting = $this->db->query("SELECT * FROM company")->getRow();
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site='$comp' ")->getRow();
         $data = [
             'tittle' => "Company Setting | Report Management System",
             'menu' => "Company Setting",

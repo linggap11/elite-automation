@@ -72,27 +72,27 @@ class ReportModel extends Model
     }
 
     // client activity
-    public function totalClientUploaded()
+    public function totalClientUploaded($underComp)
     {
-        $query = $this->db->query("SELECT COUNT(DISTINCT client_id) as total FROM log_files")->getRow();
+        $query = $this->db->query("SELECT COUNT(DISTINCT client_id) as total FROM log_files LEFT JOIN users ON users.id = log_files.client_id WHERE under_comp = '$underComp' ")->getRow();
         return $query;
     }
 
-    public function totalReport()
+    public function totalReport($underComp)
     {
-        $query = $this->db->query("SELECT COUNT(*) as total FROM log_files")->getRow();
+        $query = $this->db->query("SELECT COUNT(*) as total FROM log_files LEFT JOIN users ON users.id = log_files.client_id WHERE under_comp = '$underComp' ")->getRow();
         return $query;
     }
 
-    public function getAllFiles()
+    public function getAllFiles($underComp)
     {
-        $query = $this->db->query("SELECT log_files.id as log_id, investments.date as invest_date, investments.cost as amount, fullname, company, file, log_files.date, link, investments.id as investment_id  FROM `log_files` RIGHT JOIN investments ON investments.id = log_files.investment_id JOIN users ON users.id = log_files.client_id ORDER BY investments.date DESC");
+        $query = $this->db->query("SELECT log_files.id as log_id, investments.date as invest_date, investments.cost as amount, fullname, company, file, log_files.date, link, investments.id as investment_id  FROM `log_files` RIGHT JOIN investments ON investments.id = log_files.investment_id JOIN users ON users.id = log_files.client_id WHERE users.under_comp = '$underComp' ORDER BY investments.date DESC");
         return $query;
     }
 
-    public function getAllClient()
+    public function getAllClient($underComp)
     {
-        $query = $this->db->query("SELECT * FROM users WHERE role='client' ORDER BY fullname ASC");
+        $query = $this->db->query("SELECT * FROM users WHERE role='client' AND under_comp='$underComp' ORDER BY fullname ASC");
         return $query;
     }
 
@@ -109,9 +109,9 @@ class ReportModel extends Model
         return $query;
     }
 
-    public function getPLReport()
+    public function getPLReport($underComp)
     {
-        $query = $this->db->query("SELECT log_files.client_id, link, log_files.id as log_id, fullname, company, file, date from users join log_files on users.id=log_files.client_id where role <> 'superadmin' AND investment_id IS NULL AND link NOT LIKE 'BULK' ORDER BY date DESC");
+        $query = $this->db->query("SELECT log_files.client_id, link, log_files.id as log_id, fullname, company, file, date from users join log_files on users.id=log_files.client_id where role <> 'superadmin' AND under_comp = '$underComp' AND investment_id IS NULL AND link NOT LIKE 'BULK' ORDER BY date DESC");
         return $query;
     }
 

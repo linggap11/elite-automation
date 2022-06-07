@@ -171,14 +171,16 @@ class Reports extends BaseController
             return view('login');
         }
         $comp = 'swclient';
+        $underComp = 1;
         if (str_contains(base_url(uri_string()), 'eliteapp')) {
             $comp = 'eliteapp';
+            $underComp = 2;
         }
         $user = $this->userModel->find($userId);
-        $totalClientUploaded = $this->reportModel->totalClientUploaded();
-        $totalReport = $this->reportModel->totalReport();
-        $getAllFiles = $this->reportModel->getAllFiles();
-        $getAllClient = $this->reportModel->getAllClient();
+        $totalClientUploaded = $this->reportModel->totalClientUploaded($underComp);
+        $totalReport = $this->reportModel->totalReport($underComp);
+        $getAllFiles = $this->reportModel->getAllFiles($underComp);
+        $getAllClient = $this->reportModel->getAllClient($underComp);
         $companysetting = $this->db->query("SELECT * FROM company WHERE site='$comp' ")->getRow();
 
         $data = [
@@ -303,14 +305,16 @@ class Reports extends BaseController
             return view('login');
         }
         $comp = 'swclient';
+        $underComp = 1;
         if (str_contains(base_url(uri_string()), 'eliteapp')) {
             $comp = 'eliteapp';
+            $underComp = 2;
         }
         $user = $this->userModel->find($userId);
-        $totalClientUploaded = $this->reportModel->totalClientUploaded();
-        $totalReport = $this->reportModel->totalReport();
-        $getAllFiles = $this->reportModel->getPLReport();
-        $getAllClient = $this->reportModel->getAllClient();
+        $totalClientUploaded = $this->reportModel->totalClientUploaded($underComp);
+        $totalReport = $this->reportModel->totalReport($underComp);
+        $getAllFiles = $this->reportModel->getPLReport($underComp);
+        $getAllClient = $this->reportModel->getAllClient($underComp);
         $getBulk = $this->reportModel->getBulkUploaded();
         $companysetting = $this->db->query("SELECT * FROM company WHERE site='$comp' ")->getRow();
 

@@ -45,16 +45,18 @@ class Reports extends BaseController
 
         $user = $this->userModel->find($userId);
         $comp = 'swclient';
+        $underComp = 1;
         if (str_contains(base_url(uri_string()), 'eliteapp')) {
             $comp = 'eliteapp';
+            $underComp = 2;
         }
 
-        $totalInvest = $this->investmentModel->totalClientInvestment();
-        $totalFulfilled = $this->reportModel->totalFulfilled();
-        $getAllReports = $this->reportModel->getAllReports();
-        $finSummary = $this->reportModel->finSummary("spend");
-        $finSummaryFulfill = $this->reportModel->finSummary();
-        $costUnderOnek = $this->db->query("SELECT investments.client_id, users.fullname, investments.date as investment_date, investments.status, users.company, investments.cost as client_cost, total_retail, total_unit, total_fulfilled, investments.cost - cost_ as cost_left FROM investments LEFT JOIN (SELECT SUM(reports.qty) as total_unit, SUM(reports.original_value) as total_retail, SUM(reports.cost) as total_fulfilled, SUM(IFNULL(reports.cost, 0)) as cost_, investment_id FROM reports GROUP BY reports.investment_id ) as rep  ON investments.id = rep.investment_id JOIN users ON users.id = investments.client_id WHERE (investments.cost - cost_) BETWEEN 1 AND 1000 ORDER BY (investments.cost - cost_) ASC");
+        $totalInvest = $this->investmentModel->totalClientInvestment($underComp);
+        $totalFulfilled = $this->reportModel->totalFulfilled($underComp);
+        $getAllReports = $this->reportModel->getAllReports($underComp);
+        $finSummary = $this->reportModel->finSummary($underComp, "spend");
+        $finSummaryFulfill = $this->reportModel->finSummary($underComp);
+        $costUnderOnek = $this->db->query("SELECT investments.client_id, users.fullname, investments.date as investment_date, investments.status, users.company, investments.cost as client_cost, total_retail, total_unit, total_fulfilled, investments.cost - cost_ as cost_left FROM investments LEFT JOIN (SELECT SUM(reports.qty) as total_unit, SUM(reports.original_value) as total_retail, SUM(reports.cost) as total_fulfilled, SUM(IFNULL(reports.cost, 0)) as cost_, investment_id FROM reports GROUP BY reports.investment_id ) as rep  ON investments.id = rep.investment_id JOIN users ON users.id = investments.client_id WHERE under_comp='$underComp' AND (investments.cost - cost_) BETWEEN 1 AND 1000 ORDER BY (investments.cost - cost_) ASC");
         $news = $this->newsModel->getLastNews();
         $getBoxCost = $this->assignReportModel->getCostBox();
         $companysetting = $this->db->query("SELECT * FROM company WHERE site = '$comp' ")->getRow();
@@ -118,27 +120,29 @@ class Reports extends BaseController
         array_push($tempBoxSummary, $temp_box); 
         $summ = array();
         $check = 0;
-        foreach ($finSummary->getResultArray() as $row) {
-            foreach ($finSummaryFulfill->getResultArray() as $fill) {
-                if ($row['month'] == $fill['month']) {
+        if ($finSummary->getNumRows() > 0) {
+            foreach ($finSummary->getResultArray() as $row) {
+                foreach ($finSummaryFulfill->getResultArray() as $fill) {
+                    if ($row['month'] == $fill['month']) {
+                        $temp = array(
+                            'month' => $row['month'],
+                            'spend' => $row['spend'],
+                            'fulfill' => $fill['fulfill']
+                        );
+                        $check = 1;
+                        array_push($summ, $temp);
+                    }
+                }
+                if ($check == 0) {
                     $temp = array(
                         'month' => $row['month'],
                         'spend' => $row['spend'],
-                        'fulfill' => $fill['fulfill']
+                        'fulfill' => 0
                     );
-                    $check = 1;
                     array_push($summ, $temp);
                 }
+                $check = 0;
             }
-            if ($check == 0) {
-                $temp = array(
-                    'month' => $row['month'],
-                    'spend' => $row['spend'],
-                    'fulfill' => 0
-                );
-                array_push($summ, $temp);
-            }
-            $check = 0;
         }
 
         $data = [
@@ -529,10 +533,16 @@ class Reports extends BaseController
 
     public function getSummaryBox()
     {
-        $totalBox = $this->assignReportModel->getTotalBox();
+        $comp = 'swclient';
+        $underComp = 1;
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+            $underComp = 2;
+        }
+        $totalBox = $this->assignReportModel->getTotalBox($underComp);
         $onprocess = $this->assignReportModel->getBoxStatus("waiting");
         $complete = $this->assignReportModel->getBoxStatus("approved");
-        $totalUnit = $this->assignReportModel->getTotalUnit();
+        $totalUnit = $this->assignReportModel->getTotalUnit($underComp);
         $newDate = date("M-d-Y", strtotime($totalBox->date));
 
         $summary = array(
@@ -1027,12 +1037,18 @@ class Reports extends BaseController
 
     public function refreshDashboard()
     {
-        $totalInvest = $this->investmentModel->totalClientInvestment();
-        $totalUnit = $this->reportModel->totalUnit();
+        $comp = 'swclient';
+        $underComp = 1;
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+            $underComp = 2;
+        }
+        $totalInvest = $this->investmentModel->totalClientInvestment($underComp);
+        $totalUnit = $this->reportModel->totalUnit($underComp);
         $unit = ($totalUnit->total_unit > 0) ? $totalUnit->total_unit : "0";
-        $totalRetail = $this->reportModel->totalRetail();
-        $totalCostLeft = $this->reportModel->totalCostLeft();
-        $totalFulfilled = $this->reportModel->totalFulfilled();
+        $totalRetail = $this->reportModel->totalRetail($underComp);
+        $totalCostLeft = $this->reportModel->totalCostLeft($underComp);
+        $totalFulfilled = $this->reportModel->totalFulfilled($underComp);
         $avgRetail = ($totalUnit->total_unit != 0) ? number_format(($totalFulfilled->total_fulfilled / $totalUnit->total_unit), 2) : "0";
         $avgClientCost = ($totalUnit->total_unit != 0) ? number_format(($totalRetail->total_retail / $totalUnit->total_unit), 2) : "0";
         $summary = array(
@@ -1049,8 +1065,14 @@ class Reports extends BaseController
 
     public function getPiechart()
     {
-        $totalInvest = $this->investmentModel->totalClientInvestment();
-        $totalFulfilled = $this->reportModel->totalFulfilled();
+        $comp = 'swclient';
+        $underComp = 1;
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+            $underComp = 2;
+        }
+        $totalInvest = $this->investmentModel->totalClientInvestment($underComp);
+        $totalFulfilled = $this->reportModel->totalFulfilled($underComp);
         $summary = array(
             'total_client_cost' => $totalInvest->total_client_cost, 2,
             'total_fulfilled' => $totalFulfilled->total_fulfilled
@@ -1281,19 +1303,31 @@ class Reports extends BaseController
         
     public function getTopInvestment()
     {
-        $topInvestment = $this->investmentModel->getTopInvestment();
+        $underComp = 1;
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {            
+            $underComp = 2;
+        }
+        $topInvestment = $this->investmentModel->getTopInvestment($underComp);
         echo json_encode($topInvestment->getResultArray());
     }
 
     public function getContinuityInvestment()
     {
-        $getUser = $this->investmentModel->continuityInvestment();
+        $underComp = 1;
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {            
+            $underComp = 2;
+        }
+        $getUser = $this->investmentModel->continuityInvestment($underComp);
         echo json_encode($getUser->getResultArray());
     }
 
     public function getTopReadyToAssign()
     {
-        $getUser = $this->investmentModel->getTopInvestmentAssign();
+        $underComp = 1;
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {            
+            $underComp = 2;
+        }
+        $getUser = $this->investmentModel->getTopInvestmentAssign($underComp);
         echo json_encode($getUser->getResultArray());
     }
 
@@ -1341,11 +1375,13 @@ class Reports extends BaseController
             return view('login');
         }
         $comp = 'swclient';
+        $underComp = 1;
         if (str_contains(base_url(uri_string()), 'eliteapp')) {
             $comp = 'eliteapp';
+            $underComp = 2;
         }
         $user = $this->userModel->find($userId);
-        $getUsers = $this->userModel->where('role', 'client')->orderBy('fullname', 'ASC')->get();
+        $getUsers = $this->userModel->where('role', 'client')->where('under_comp', $underComp)->orderBy('fullname', 'ASC')->get();
         $getBrands = $this->categoryModel->getBrands();
         $companysetting = $this->db->query("SELECT * FROM company WHERE site='$comp' ")->getRow();
         $data = [
@@ -1361,9 +1397,13 @@ class Reports extends BaseController
 
     public function getBrandClient()
     {
+        $underComp = 1;
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $underComp = 2;
+        }
         $id = $this->request->getVar('userid');
         $brands = $this->categoryModel->getBrands();
-        $selectedBrand = $this->categoryModel->selectedBrand($id);
+        $selectedBrand = $this->categoryModel->selectedBrand($id, $underComp);
         $temp_brand = array();
         $check = 0;
         foreach ($brands->getResultArray() as $brand) {
@@ -1400,7 +1440,7 @@ class Reports extends BaseController
         }
         $id = $this->request->getVar('brandid');    
         $users = $this->userModel->getAllUser($underComp);
-        $selectedBrand = $this->categoryModel->selectedClient($id);
+        $selectedBrand = $this->categoryModel->selectedClient($id, $underComp);
         $temp_brand = array();
         $check = 0;
         foreach ($users->getResultArray() as $user) {
@@ -1425,12 +1465,16 @@ class Reports extends BaseController
 
     public function getClientByDescBrand()
     {
+        $underComp = 1;
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {         
+            $underComp = 2;
+        }
         $desc = $this->request->getVar('description');
         if (strcasecmp($desc, "Unrestricted") == 0) {
             $getClient = $this->db->query("SELECT users.id, users.fullname, users.company FROM users JOIN investments ON users.id = investments.client_id WHERE role = 'client' AND status='assign' ");
         } else {
             $getBrandId = $this->db->query('SELECT id FROM brands WHERE brand_name LIKE ' . $this->db->escape($desc) . ' ')->getRow();
-            $getClient = $this->categoryModel->selectedClient($getBrandId->id);
+            $getClient = $this->categoryModel->selectedClient($getBrandId->id, $underComp);
         }
         
         $temp_client = array();

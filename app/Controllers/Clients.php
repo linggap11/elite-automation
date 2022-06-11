@@ -32,8 +32,10 @@ class Clients extends BaseController
             return redirect()->to(base_url('/login'));
         }
         $comp = 'swclient';
+        $underComp = 1;
         if (str_contains(base_url(uri_string()), 'eliteapp')) {
             $comp = 'eliteapp';
+            $underComp = 2;
         }
         $user = $this->userModel->find($userId);
         $investId = $this->investmentModel->getInvestmentId($userId);
@@ -53,6 +55,7 @@ class Clients extends BaseController
                 return view('client/dashboard2', $data);
             }
 
+            
             $lastInvestment = $this->investmentModel->getLastDateOfInvestment($userId);
             $category = $this->categoryModel->getCategory($investId);
             $totalInvest = $this->investmentModel->totalClientInvestment($investId);
@@ -62,7 +65,7 @@ class Clients extends BaseController
             $totalFulfilled = $this->reportModel->totalFulfilled($investId);
             $getAllReportClient = $this->reportModel->getAllReportClient($investId);
             $investmentDate = $this->investmentModel->investmentDate($user['id']);
-            $getVendorName = $this->reportModel->getVendorName($investId);
+            $getVendorName = $this->reportModel->getVendorName($investId, $underComp);
         } else {
             $lastInvestment = $this->investmentModel->getWhere(['id' => $dateId])->getLastRow();
             $category = $this->categoryModel->getCategory($dateId);
@@ -73,7 +76,7 @@ class Clients extends BaseController
             $totalFulfilled = $this->reportModel->totalFulfilled($dateId);
             $getAllReportClient = $this->reportModel->getAllReportClient($dateId);
             $investmentDate = $this->investmentModel->investmentDate($user['id']);
-            $getVendorName = $this->reportModel->getVendorName($dateId);
+            $getVendorName = $this->reportModel->getVendorName($dateId, $underComp);
         }
 
         $data = [
@@ -262,13 +265,15 @@ class Clients extends BaseController
             return redirect()->to(base_url('/login'));
         }
         $comp = 'swclient';
+        $underComp = 1;
         if (str_contains(base_url(uri_string()), 'eliteapp')) {
             $comp = 'eliteapp';
+            $underComp = 2;
         }
         $companysetting = $this->db->query("SELECT * FROM company WHERE site = '$comp' ")->getRow();
         $brands = $this->categoryModel->getBrands();
         $user = $this->userModel->find($userId);
-        $selectedBrand = $this->categoryModel->selectedBrand($userId);
+        $selectedBrand = $this->categoryModel->selectedBrand($userId, $underComp);
         $temp_brand = array();
         $check = 0;
         foreach ($brands->getResultArray() as $brand) {

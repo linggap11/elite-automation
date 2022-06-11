@@ -16,12 +16,12 @@ class InvestmentModel extends Model
         $this->db = \Config\Database::connect();
     }
 
-    public function totalClientInvestment($id = null)
+    public function totalClientInvestment($underComp, $id = null)
     {
         if ($id != null) {
-            $query = $this->db->query("SELECT SUM(cost) as total_client_cost FROM (SELECT fullname, cost FROM `investments` JOIN users ON users.id = investments.client_id WHERE investments.id = '$id' ORDER BY fullname ASC ) as t  ")->getRow();
+            $query = $this->db->query("SELECT SUM(cost) as total_client_cost FROM (SELECT fullname, cost FROM `investments` JOIN users ON users.id = investments.client_id WHERE investments.id = '$id' AND under_comp='$underComp' ORDER BY fullname ASC ) as t  ")->getRow();
         } else {
-            $query = $this->db->query("SELECT SUM(cost) as total_client_cost FROM (SELECT fullname, cost FROM `investments` JOIN users ON users.id = investments.client_id ORDER BY fullname ASC ) as t  ")->getRow();
+            $query = $this->db->query("SELECT SUM(cost) as total_client_cost FROM (SELECT fullname, cost FROM `investments` JOIN users ON users.id = investments.client_id AND under_comp='$underComp' ORDER BY fullname ASC ) as t  ")->getRow();
         }
         return $query;
     }
@@ -112,21 +112,21 @@ class InvestmentModel extends Model
         return $query;
     }
 
-    public function getTopInvestment()
+    public function getTopInvestment($underComp)
     {
-        $query = $this->db->query("SELECT fullname, amount, currency FROM (SELECT fullname, SUM(cost) as amount, CONCAT('$',FORMAT(SUM(cost),0,'en_US')) as currency FROM investments JOIN users ON users.id = investments.client_id GROUP BY client_id ORDER BY SUM(cost) DESC LIMIT 10) as tp ORDER BY amount ASC");
+        $query = $this->db->query("SELECT fullname, amount, currency FROM (SELECT fullname, SUM(cost) as amount, CONCAT('$',FORMAT(SUM(cost),0,'en_US')) as currency FROM investments JOIN users ON users.id = investments.client_id WHERE under_comp='$underComp' GROUP BY client_id ORDER BY SUM(cost) DESC LIMIT 10) as tp ORDER BY amount ASC");
         return $query;
     }
 
-    public function continuityInvestment()
+    public function continuityInvestment($underComp)
     {
-        $query = $this->db->query("SELECT fullname, total FROM (SELECT fullname, COUNT(investments.id) as total FROM investments JOIN users ON users.id = investments.client_id GROUP BY client_id ORDER BY COUNT(investments.id)  DESC LIMIT 10) as con ORDER BY total ASC");
+        $query = $this->db->query("SELECT fullname, total FROM (SELECT fullname, COUNT(investments.id) as total FROM investments JOIN users ON users.id = investments.client_id WHERE under_comp='$underComp' GROUP BY client_id ORDER BY COUNT(investments.id)  DESC LIMIT 10) as con ORDER BY total ASC");
         return $query;
     }
 
-    public function getTopInvestmentAssign()
+    public function getTopInvestmentAssign($underComp)
     {
-        $query = $this->db->query("SELECT fullname, amount, cost_left FROM (SELECT investments.cost as amount, users.fullname, (investments.cost - SUM(reports.cost)) as cost_left FROM investments JOIN users on investments.client_id = users.id JOIN reports ON reports.investment_id = investments.id WHERE users.role = 'client' AND status = 'assign' GROUP BY reports.investment_id ORDER BY amount DESC LIMIT 10) as assign ORDER BY amount ASC");
+        $query = $this->db->query("SELECT fullname, amount, cost_left FROM (SELECT investments.cost as amount, users.fullname, (investments.cost - SUM(reports.cost)) as cost_left FROM investments JOIN users on investments.client_id = users.id JOIN reports ON reports.investment_id = investments.id WHERE users.role = 'client' AND under_comp='$underComp' AND status = 'assign' GROUP BY reports.investment_id ORDER BY amount DESC LIMIT 10) as assign ORDER BY amount ASC");
         return $query;
     }
 }

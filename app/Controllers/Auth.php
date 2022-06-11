@@ -52,20 +52,14 @@ class Auth extends BaseController
                     'role' => $user->role
                 ];
                 session()->set($params);
-                if ($user->role == "superadmin") {
-                    if ($currentPage == base_url()) {
-                        return redirect()->to(base_url('admin/dashboard'))->with('message', 'Login Successful!');
-                    } else {
-                        return redirect()->to($currentPage)->with('message', 'Login Successful!');
-                    }
-                } elseif ($user->role == "va" || $user->role == "admin") {
-                    return redirect()->to(base_url('va/assignment-report'))->with('message', 'Login Successful!');
-                } else {
+                if ($user->role == "client") {
                     if ($currentPage == base_url() || $currentPage == base_url() . '/login') {
                         return redirect()->to(base_url('get-started'))->with('message', 'Login Successful!');
                     } else {
                         return redirect()->to($currentPage)->with('message', 'Login Successful!');
                     }
+                } else {
+                    return redirect()->back()->with('error', 'Incorrect Password!');
                 }
             } else {
                 return redirect()->back()->with('error', 'Incorrect Password!');

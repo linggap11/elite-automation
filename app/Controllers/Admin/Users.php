@@ -63,7 +63,6 @@ class Users extends BaseController
             return redirect()->to(base_url('/login'));
         }
         $comp = 'swclient';
-        
         if (str_contains(base_url(uri_string()), 'eliteapp')) {
             $comp = 'eliteapp';
             

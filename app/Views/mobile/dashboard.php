@@ -355,10 +355,12 @@
                     <div class="chart-container">
                         <div class="chart has-fixed-height" id="percentage"></div>
                         <?php
-                        if ($totalFulfilled->total_fulfilled != 0 || $totalInvest->total_client_cost != 0) {
-                            $fulfilledPercent = ($totalFulfilled->total_fulfilled / $totalInvest->total_client_cost) * 100;
-                            $clientCostPercent = 100 - $fulfilledPercent;
-                        }
+                            if (!is_null($totalFulfilled)) {
+                                if ($totalFulfilled->total_fulfilled != 0 || $totalInvest->total_client_cost != 0) {
+                                    $fulfilledPercent = ($totalFulfilled->total_fulfilled / $totalInvest->total_client_cost) * 100;
+                                    $clientCostPercent = 100 - $fulfilledPercent;
+                                }
+                            }
 
                         ?>
                         <script type="text/javascript">

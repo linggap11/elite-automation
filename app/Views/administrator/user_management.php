@@ -90,6 +90,7 @@
                                             </select>
                                         </div>
                                     </div>
+                                    
                                     <div class="form-group">
                                         <label>Password</label>
                                         <div class="input-group">
@@ -162,7 +163,7 @@
                             </td>
                             <td>
                                 <div class="font-weight-bold"><?= strtoupper($row['role']) ?></div>
-                            </td>
+                            </td>                            
                             <td class="text-center">
                                 <div class="list-icons">
                                     <div class="dropdown">

@@ -68,6 +68,7 @@
                         <textarea class="form-control" name="address" col=4><?= $profile['address'] ?></textarea>
                     </div>
                 </div>
+                
                 <fieldset class="mb-3">
                     <legend class="text-uppercase font-size-sm font-weight-bold">Change Password</legend>
                     <div class="form-group row">

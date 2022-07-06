@@ -31,11 +31,16 @@ class Clients extends BaseController
         if (is_null($userId)) {
             return redirect()->to(base_url('/login'));
         }
+        
         $user = $this->userModel->find($userId);
         $investId = $this->investmentModel->getInvestmentId($userId);
         // dd($investId);
         $dateId = $this->request->getVar('investdate');
-        $news = $this->newsModel->getLastNews();
+        $underComp = 1;
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $underComp = 2;
+        }
+        $news = $this->newsModel->getLastNews($underComp);
         if ($dateId == null) {
             if ($user['role'] == 'client' and $investId == null) {
                 $data = [
@@ -126,6 +131,7 @@ class Clients extends BaseController
                         "company" => $post['company'],
                         "address" => $post['address'],
                         "photo" => $fileName,
+                        "under_comp" => $post['under_comp'],
                         "password" => password_hash($post['new_password'], PASSWORD_BCRYPT),
                     ));
                 } else {
@@ -134,6 +140,7 @@ class Clients extends BaseController
                         "fullname" => $post['fullname'],
                         "company" => $post['company'],
                         "address" => $post['address'],
+                        "under_comp" => $post['under_comp'],
                         "password" => password_hash($post['new_password'], PASSWORD_BCRYPT),
                     ));
                 }
@@ -148,6 +155,7 @@ class Clients extends BaseController
                     "company" => $post['company'],
                     "address" => $post['address'],
                     "photo" => $fileName,
+                    "under_comp" => $post['under_comp']
                 ));
             } else {
                 $this->userModel->save(array(
@@ -155,6 +163,7 @@ class Clients extends BaseController
                     "fullname" => $post['fullname'],
                     "company" => $post['company'],
                     "address" => $post['address'],
+                    "under_comp" => $post['under_comp']
                 ));
             }
         }

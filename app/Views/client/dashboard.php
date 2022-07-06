@@ -193,7 +193,7 @@
                             </td>
                             <td class="text-center">$ <?= $row['retail_value'] ?></td>
                             <td class="text-center">$ <?= $row['original_value'] ?></td>
-                            <td class="text-center">$ <?= $row['cost'] ?></td>
+                            <td class="text-center">$ <?= number_format($row['cost'], 2) ?></td>
 
                         </tr>
                     <?php endforeach ?>
@@ -349,11 +349,17 @@
                 </div>
                 <div class="card-body">
                     <div class="chart-container">
+                        
                         <div class="chart has-fixed-height" id="percentage"></div>
                         <?php
-                        if ($totalFulfilled->total_fulfilled != 0 || $totalInvest->total_client_cost != 0) {
-                            $fulfilledPercent = ($totalFulfilled->total_fulfilled / $totalInvest->total_client_cost) * 100;
-                            $clientCostPercent = 100 - $fulfilledPercent;
+                        $fulfilledPercent = 0;
+                        $clientCostPercent = 0;
+                        
+                        if (!is_null($totalFulfilled)) {
+                            if (!is_null($totalFulfilled->total_fulfilled) && !is_null($totalInvest->total_client_cost)) {
+                                $fulfilledPercent = ($totalFulfilled->total_fulfilled / $totalInvest->total_client_cost) * 100;
+                                $clientCostPercent = 100 - $fulfilledPercent;
+                            }
                         }
 
                         ?>

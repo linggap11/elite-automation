@@ -20,10 +20,17 @@ class Auth extends BaseController
     public function login()
     {
         $userId = session()->get('user_id');
-
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
+        $company = $this->db->query("SELECT logo FROM company WHERE site='$comp' LIMIT 1")->getRow();
+        
         if (is_null($userId)) {
-
-            return view('login');
+            $data = array(
+                'logo' => $company->logo
+            );
+            return view('login', $data);
         } else {
             if (session()->get('role') == 'superadmin') {
                 return redirect()->route('admin/dashboard');
@@ -35,7 +42,8 @@ class Auth extends BaseController
     public function loginProses()
     {
         $post = $this->request->getVar();
-        $user = $this->userModel->getWhere(['username' => $post['username']])->getRow();
+        $user = $this->userModel->getWhere(['username' => $post['username'], 'under_comp' => '2'])->getRow();
+       
         $currentPage = $post['current'];
         if ($user) {
             if (password_verify($post['password'], $user->password)) {
@@ -44,20 +52,14 @@ class Auth extends BaseController
                     'role' => $user->role
                 ];
                 session()->set($params);
-                if ($user->role == "superadmin") {
-                    if ($currentPage == base_url()) {
-                        return redirect()->to(base_url('admin/dashboard'))->with('message', 'Login Successful!');
-                    } else {
-                        return redirect()->to($currentPage)->with('message', 'Login Successful!');
-                    }
-                } elseif ($user->role == "va" || $user->role == "admin") {
-                    return redirect()->to(base_url('va/assignment-report'))->with('message', 'Login Successful!');
-                } else {
+                if ($user->role == "client") {
                     if ($currentPage == base_url() || $currentPage == base_url() . '/login') {
                         return redirect()->to(base_url('get-started'))->with('message', 'Login Successful!');
                     } else {
                         return redirect()->to($currentPage)->with('message', 'Login Successful!');
                     }
+                } else {
+                    return redirect()->back()->with('error', 'Incorrect Password!');
                 }
             } else {
                 return redirect()->back()->with('error', 'Incorrect Password!');

@@ -24,6 +24,10 @@ class News extends BaseController
         if (is_null($userId)) {
             return redirect()->to(base_url('/login'));
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
         $user = $this->userModel->find($userId);
         $underComp = 1;
         if (str_contains(base_url(uri_string()), 'eliteapp')) {
@@ -50,6 +54,10 @@ class News extends BaseController
         if (is_null($userId)) {
             return redirect()->to(base_url('/login'));
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
         $user = $this->userModel->find($userId);
         $underComp = 1;
         if (str_contains(base_url(uri_string()), 'eliteapp')) {
@@ -58,7 +66,7 @@ class News extends BaseController
         $news = $this->newsModel->getLastNews($underComp);
         $allNews = $this->newsModel->getNews($underComp);
         $notifications = $this->db->query("SELECT * FROM push_notifications ORDER BY date DESC");
-        $companysetting = $this->db->query("SELECT * FROM company")->getRow();
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site='$comp' ")->getRow();
         $data = [
             'tittle' => "Announcements | Report Management System",
             'menu' => "Announcements",

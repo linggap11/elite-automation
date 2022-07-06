@@ -2,8 +2,13 @@
     <div class="d-flex flex-1 pl-3">
         <div class="navbar-brand wmin-0 mr-1 p-1">
             <a href="<?= base_url('/') ?>" class="d-inline-block">
+<<<<<<< HEAD
             <img src="/assets/images/elite.png" class="d-none d-sm-block" alt="FBA Logo" style="width: 255px">
                 <img src="/assets/images/elite-logo-only.png" class="d-sm-none" alt="" style="width: 100%;">
+=======
+            <img src="/assets/images/<?= $companySetting->logo ?>" class="d-none d-sm-block" alt="FBA Logo" style="width: 255px">
+                <img src="/assets/images/fba-logo-only.png" class="d-sm-none" alt="" style="width: 100%;">
+>>>>>>> b5fb4b9a2f56257ca7f15c7b3b6f4043575159fa
             </a>
         </div>
 

@@ -34,6 +34,7 @@ class Clients extends BaseController
         
         $user = $this->userModel->find($userId);
         $investId = $this->investmentModel->getInvestmentId($userId);
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site = '$comp' ")->getRow();
         // dd($investId);
         $dateId = $this->request->getVar('investdate');
         $underComp = 1;
@@ -53,6 +54,7 @@ class Clients extends BaseController
                 return view('client/dashboard2', $data);
             }
 
+            
             $lastInvestment = $this->investmentModel->getLastDateOfInvestment($userId);
             $category = $this->categoryModel->getCategory($investId);
             $totalInvest = $this->investmentModel->totalClientInvestment($investId);
@@ -62,7 +64,7 @@ class Clients extends BaseController
             $totalFulfilled = $this->reportModel->totalFulfilled($investId);
             $getAllReportClient = $this->reportModel->getAllReportClient($investId);
             $investmentDate = $this->investmentModel->investmentDate($user['id']);
-            $getVendorName = $this->reportModel->getVendorName($investId);
+            $getVendorName = $this->reportModel->getVendorName($investId, $underComp);
         } else {
             $lastInvestment = $this->investmentModel->getWhere(['id' => $dateId])->getLastRow();
             $category = $this->categoryModel->getCategory($dateId);
@@ -73,7 +75,7 @@ class Clients extends BaseController
             $totalFulfilled = $this->reportModel->totalFulfilled($dateId);
             $getAllReportClient = $this->reportModel->getAllReportClient($dateId);
             $investmentDate = $this->investmentModel->investmentDate($user['id']);
-            $getVendorName = $this->reportModel->getVendorName($dateId);
+            $getVendorName = $this->reportModel->getVendorName($dateId, $underComp);
         }
 
         $data = [
@@ -90,7 +92,8 @@ class Clients extends BaseController
             'investDate' => $investmentDate,
             'lastInvestment' => $lastInvestment,
             'getVendorName' => $getVendorName,
-            'news' => $news
+            'news' => $news,
+            'companySetting' => $companysetting
         ];
         return view('client/dashboard', $data);
     }
@@ -101,11 +104,17 @@ class Clients extends BaseController
         if (is_null($userId)) {
             return redirect()->to(base_url('/login'));
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site = '$comp' ")->getRow();
         $user = $this->userModel->find($userId);
         $data = [
             'tittle' => "Account Setting | Report Management System",
             'menu' => $user['fullname'] . "'s Setting",
-            'user' => $user
+            'user' => $user,
+            'companySetting' => $companysetting
         ];
 
         return view('client/account_setting', $data);
@@ -176,11 +185,17 @@ class Clients extends BaseController
         if (is_null($userId)) {
             return redirect()->to(base_url('/login'));
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
         $user = $this->userModel->find($userId);
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site = '$comp' ")->getRow();
         $data = [
             'tittle' => "Purchase Inventory | Report Management System",
             'menu' => "Purchase Inventory",
-            'user' => $user
+            'user' => $user,
+            'companySetting' => $companysetting
         ];
 
         return view('client/purchase_inventory', $data);
@@ -192,7 +207,12 @@ class Clients extends BaseController
         if (is_null($userId)) {
             return redirect()->to(base_url('/login'));
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
         $user = $this->userModel->find($userId);
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site = '$comp' ")->getRow();
         $plReport = $this->reportModel->showPLReport($userId);
         $downloadPLReport = $this->reportModel->downloadPLReport($userId);
         $data = [
@@ -200,7 +220,8 @@ class Clients extends BaseController
             'menu' => "P&L Report",
             'user' => $user,
             'plReport' => $plReport,
-            'file' => $downloadPLReport
+            'file' => $downloadPLReport,
+            'companySetting' => $companysetting
         ];
         return view('client/pl_report', $data);
     }
@@ -216,7 +237,12 @@ class Clients extends BaseController
         if (is_null($userId)) {
             return redirect()->to(base_url('/login'));
         }
+        $comp = 'swclient';
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+        }
         $user = $this->userModel->find($userId);
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site = '$comp' ")->getRow();
         $getClientCostLeft = $this->reportModel->getClientCostLeft($userId);
         $monthdiff = $this->investmentModel->monthDiff($userId);
 
@@ -225,7 +251,8 @@ class Clients extends BaseController
             'menu' => "Get Started",
             'user' => $user,
             'costLeft' => $getClientCostLeft,
-            'monthDiff' => $monthdiff
+            'monthDiff' => $monthdiff,
+            'companySetting' => $companysetting
         ];
         return view('client/getstarted', $data);
     }
@@ -236,9 +263,16 @@ class Clients extends BaseController
         if (is_null($userId)) {
             return redirect()->to(base_url('/login'));
         }
+        $comp = 'swclient';
+        $underComp = 1;
+        if (str_contains(base_url(uri_string()), 'eliteapp')) {
+            $comp = 'eliteapp';
+            $underComp = 2;
+        }
+        $companysetting = $this->db->query("SELECT * FROM company WHERE site = '$comp' ")->getRow();
         $brands = $this->categoryModel->getBrands();
         $user = $this->userModel->find($userId);
-        $selectedBrand = $this->categoryModel->selectedBrand($userId);
+        $selectedBrand = $this->categoryModel->selectedBrand($userId, $underComp);
         $temp_brand = array();
         $check = 0;
         foreach ($brands->getResultArray() as $brand) {
@@ -267,7 +301,8 @@ class Clients extends BaseController
             'tittle' => "Brand Approvals | Report Management System",
             'menu' => "Brand Approvals",
             'user' => $user,
-            'brands' => $temp_brand
+            'brands' => $temp_brand,
+            'companySetting' => $companysetting
         ];
         return view('client/brand_approvals', $data);
     }

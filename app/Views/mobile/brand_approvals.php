@@ -130,7 +130,33 @@
                     </div>
                 </div>
 
+<<<<<<< HEAD
                 
+=======
+                <div class="tab-pane fade" id="icon-only-tab2">
+                    <div class="form-group">
+                        <p class="font-weight-semibold">Your Brand Approval</p>
+                        <form id="brand_approval">
+                            <div class="border p-3 rounded">
+                                <div class="row">
+                                    <?php foreach ($brands as $brand) : ?>
+                                        <?php if ($brand['checked'] == 1) : ?>
+                                            <div class="col-md-2">
+                                                <label class="custom-control custom-control-dark custom-checkbox mb-2">                                                    
+                                                    <input type="checkbox" class="custom-control-input" checked disabled>                                                    
+                                                    <span class="custom-control-label font-weight-bold"><?= $brand['brand_name'] ?></span>
+                                                </label>
+                                            </div>
+                                        <?php endif ?>
+                                    <?php endforeach ?>
+                                </div>
+
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+>>>>>>> b5fb4b9a2f56257ca7f15c7b3b6f4043575159fa
             </div>
         </div>
     </div>

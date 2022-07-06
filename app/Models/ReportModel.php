@@ -15,84 +15,92 @@ class ReportModel extends Model
         $this->db = \Config\Database::connect();
     }
 
-    public function totalUnit($id = null)
+    public function totalUnit($underComp, $id = null)
     {
         if ($id == null) {
-            $query = $this->db->query("SELECT SUM(qty) as total_unit FROM reports")->getRow();
+            $query = $this->db->query("SELECT SUM(qty) as total_unit FROM reports JOIN users ON users.id = reports.client_id WHERE under_comp='$underComp' ")->getRow();
         } else {
-            $query = $this->db->query("SELECT SUM(qty) as total_unit FROM reports WHERE investment_id = '$id'")->getRow();
+            $query = $this->db->query("SELECT SUM(qty) as total_unit FROM reports JOIN users ON users.id = reports.client_id WHERE under_comp='$underComp' AND investment_id = '$id'")->getRow();
         }
         return $query;
     }
 
-    public function totalRetail($id = null)
+    public function totalRetail($underComp, $id = null)
     {
         if ($id == null) {
-            $query = $this->db->query("SELECT SUM(original_value) as total_retail FROM reports JOIN users ON users.id = reports.client_id")->getRow();
+            $query = $this->db->query("SELECT SUM(original_value) as total_retail FROM reports JOIN users ON users.id = reports.client_id WHERE under_comp='$underComp' ")->getRow();
         } else {
-            $query = $this->db->query("SELECT SUM(original_value) as total_retail FROM reports WHERE investment_id ='$id' ")->getRow();
+            $query = $this->db->query("SELECT SUM(original_value) as total_retail FROM reports WHERE under_comp='$underComp' AND investment_id ='$id' ")->getRow();
         }
         return $query;
     }
 
-    public function totalCostLeft($id = null)
+    public function totalCostLeft($underComp, $id = null)
     {
         if ($id == null) {
-            $totalCost = $this->db->query("SELECT SUM(cost) as total_cost FROM reports JOIN users ON users.id = reports.client_id")->getRow();
-            $totalInvest = $this->db->query("SELECT SUM(cost) as total_invest FROM (SELECT fullname, cost FROM `investments` JOIN users ON users.id = investments.client_id ORDER BY fullname ASC ) as t")->getRow();
+            $totalCost = $this->db->query("SELECT SUM(cost) as total_cost FROM reports JOIN users ON users.id = reports.client_id WHERE under_comp='$underComp' ")->getRow();
+            $totalInvest = $this->db->query("SELECT SUM(cost) as total_invest FROM (SELECT fullname, cost FROM `investments` JOIN users ON users.id = investments.client_id WHERE under_comp='$underComp' ORDER BY fullname ASC ) as t")->getRow();
         } else {
-            $totalCost = $this->db->query("SELECT SUM(cost) as total_cost FROM reports WHERE investment_id = '$id'")->getRow();
-            $totalInvest = $this->db->query("SELECT SUM(cost) as total_invest FROM (SELECT fullname, cost FROM `investments` JOIN users ON users.id = investments.client_id WHERE investments.id = '$id' ORDER BY fullname ASC ) as t  ")->getRow();
+            $totalCost = $this->db->query("SELECT SUM(cost) as total_cost FROM reports WHERE under_comp='$underComp' AND investment_id = '$id'")->getRow();
+            $totalInvest = $this->db->query("SELECT SUM(cost) as total_invest FROM (SELECT fullname, cost FROM `investments` JOIN users ON users.id = investments.client_id WHERE under_comp='$underComp' AND investments.id = '$id' ORDER BY fullname ASC ) as t  ")->getRow();
         }
         $totalCostLeft = $totalInvest->total_invest - $totalCost->total_cost;
         return $totalCostLeft;
     }
 
-    public function totalFulfilled($id = null)
+    public function totalFulfilled($underComp, $id = null)
     {
         if ($id == null) {
-            $query =  $this->db->query("SELECT SUM(cost) as total_fulfilled FROM reports JOIN users ON users.id = reports.client_id")->getRow();
+            $query =  $this->db->query("SELECT SUM(cost) as total_fulfilled FROM reports JOIN users ON users.id = reports.client_id WHERE under_comp='$underComp' ")->getRow();
         } else {
-            $query =  $this->db->query("SELECT SUM(cost) as total_fulfilled FROM reports WHERE investment_id='$id' ")->getRow();
+            $query =  $this->db->query("SELECT SUM(cost) as total_fulfilled FROM reports JOIN users ON users.id = reports.client_id WHERE investment_id='$id' AND under_comp='$underComp' ")->getRow();
         }
         return $query;
     }
 
 
-    public function getAllReports()
+    public function getAllReports($underComp)
     {
+<<<<<<< HEAD
         $query = $this->db->query("SELECT investments.client_id, users.fullname, investments.date as investment_date, link, investments.status, users.company, investments.cost as client_cost, total_retail, total_unit, total_fulfilled, investments.cost - IFNULL(cost_, 0) as cost_left FROM investments LEFT JOIN (SELECT SUM(reports.qty) as total_unit, SUM(reports.original_value) as total_retail, SUM(reports.cost) as total_fulfilled, SUM(IFNULL(reports.cost, 0)) as cost_, investment_id FROM reports GROUP BY reports.investment_id ) as rep  ON investments.id = rep.investment_id JOIN users ON users.id = investments.client_id JOIN log_files ON log_files.investment_id = investments.id ORDER BY investments.date DESC");
+=======
+        $query = $this->db->query("SELECT investments.client_id, users.fullname, investments.date as investment_date, investments.status, users.company, investments.cost as client_cost, total_retail, total_unit, total_fulfilled, investments.cost - IFNULL(cost_, 0) as cost_left FROM investments LEFT JOIN (SELECT SUM(reports.qty) as total_unit, SUM(reports.original_value) as total_retail, SUM(reports.cost) as total_fulfilled, SUM(IFNULL(reports.cost, 0)) as cost_, investment_id FROM reports GROUP BY reports.investment_id ) as rep  ON investments.id = rep.investment_id JOIN users ON users.id = investments.client_id WHERE under_comp='$underComp' ORDER BY investments.date DESC");
+>>>>>>> b5fb4b9a2f56257ca7f15c7b3b6f4043575159fa
         return $query;
     }
 
-    public function getAllReportClient($id = null)
+    public function getAllReportClient($underComp, $id = null)
     {
+<<<<<<< HEAD
         $query = $this->db->query("SELECT reports.*, log_files.link from reports LEFT JOIN log_files ON reports.investment_id = log_files.investment_id WHERE reports.investment_id = '$id' GROUP BY reports.id ORDER by ID ASC");
+=======
+        $query = $this->db->query("SELECT reports.*, log_files.link from reports JOIN log_files ON reports.client_id = log_files.client_id JOIN users ON users.id = reports.client_id WHERE reports.investment_id = '$id' AND under_comp='$underComp' GROUP BY reports.id ORDER by ID ASC");
+>>>>>>> b5fb4b9a2f56257ca7f15c7b3b6f4043575159fa
         return $query;
     }
 
     // client activity
-    public function totalClientUploaded()
+    public function totalClientUploaded($underComp)
     {
-        $query = $this->db->query("SELECT COUNT(DISTINCT client_id) as total FROM log_files")->getRow();
+        $query = $this->db->query("SELECT COUNT(DISTINCT client_id) as total FROM log_files LEFT JOIN users ON users.id = log_files.client_id WHERE under_comp = '$underComp' ")->getRow();
         return $query;
     }
 
-    public function totalReport()
+    public function totalReport($underComp)
     {
-        $query = $this->db->query("SELECT COUNT(*) as total FROM log_files")->getRow();
+        $query = $this->db->query("SELECT COUNT(*) as total FROM log_files LEFT JOIN users ON users.id = log_files.client_id WHERE under_comp = '$underComp' ")->getRow();
         return $query;
     }
 
-    public function getAllFiles()
+    public function getAllFiles($underComp)
     {
-        $query = $this->db->query("SELECT log_files.id as log_id, investments.date as invest_date, investments.cost as amount, fullname, company, file, log_files.date, link, investments.id as investment_id  FROM `log_files` RIGHT JOIN investments ON investments.id = log_files.investment_id JOIN users ON users.id = log_files.client_id ORDER BY investments.date DESC");
+        $query = $this->db->query("SELECT log_files.id as log_id, investments.date as invest_date, investments.cost as amount, fullname, company, file, log_files.date, link, investments.id as investment_id  FROM `log_files` RIGHT JOIN investments ON investments.id = log_files.investment_id JOIN users ON users.id = log_files.client_id WHERE users.under_comp = '$underComp' ORDER BY investments.date DESC");
         return $query;
     }
 
-    public function getAllClient()
+    public function getAllClient($underComp)
     {
-        $query = $this->db->query("SELECT * FROM users WHERE role='client' ORDER BY fullname ASC");
+        $query = $this->db->query("SELECT * FROM users WHERE role='client' AND under_comp='$underComp' ORDER BY fullname ASC");
         return $query;
     }
 
@@ -103,15 +111,15 @@ class ReportModel extends Model
         $this->db->query("DELETE FROM log_files WHERE investment_id='$id' ");
     }
 
-    public function getVendorName($id)
+    public function getVendorName($id, $underComp)
     {
-        $query = $this->db->query("SELECT SUM(qty) as qty, vendor FROM reports WHERE investment_id = '$id' AND vendor IS NOT NULL GROUP BY vendor ORDER BY qty DESC LIMIT 15");
+        $query = $this->db->query("SELECT SUM(qty) as qty, vendor FROM reports JOIN users ON users.id = reports.client_id WHERE investment_id = '$id' AND under_comp='$underComp' AND vendor IS NOT NULL GROUP BY vendor ORDER BY qty DESC LIMIT 15");
         return $query;
     }
 
-    public function getPLReport()
+    public function getPLReport($underComp)
     {
-        $query = $this->db->query("SELECT log_files.client_id, link, log_files.id as log_id, fullname, company, file, date from users join log_files on users.id=log_files.client_id where role <> 'superadmin' AND investment_id IS NULL AND link NOT LIKE 'BULK' ORDER BY date DESC");
+        $query = $this->db->query("SELECT log_files.client_id, link, log_files.id as log_id, fullname, company, file, date from users join log_files on users.id=log_files.client_id where role <> 'superadmin' AND under_comp = '$underComp' AND investment_id IS NULL AND link NOT LIKE 'BULK' ORDER BY date DESC");
         return $query;
     }
 
@@ -176,12 +184,12 @@ class ReportModel extends Model
         return $query;
     }
 
-    public function finSummary($type = null)
+    public function finSummary($underComp, $type = null)
     {
         if ($type == 'spend') {
-            $query = $this->db->query("SELECT date_format(date, '%b %Y') as month, sum(investments.cost) as spend FROM investments JOIN users ON users.id = investments.client_id group by year(date),month(date) ORDER BY date DESC LIMIT 12");
+            $query = $this->db->query("SELECT date_format(date, '%b %Y') as month, sum(investments.cost) as spend FROM investments JOIN users ON users.id = investments.client_id WHERE under_comp='$underComp' group by year(date),month(date) ORDER BY date DESC LIMIT 12");
         } else {
-            $query = $this->db->query("SELECT date_format(date, '%b %Y') as month, SUM(reports.cost) as fulfill FROM reports JOIN investments ON investments.id = reports.investment_id GROUP BY year(date),month(date) ORDER BY date DESC LIMIT 15");
+            $query = $this->db->query("SELECT date_format(date, '%b %Y') as month, SUM(reports.cost) as fulfill FROM reports JOIN investments ON investments.id = reports.investment_id JOIN users ON users.id = investments.client_id  WHERE under_comp='$underComp' GROUP BY year(date),month(date) ORDER BY date DESC LIMIT 15");
         }
         return $query;
     }

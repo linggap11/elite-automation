@@ -1,192 +1,158 @@
 <?= $this->extend('client/layout/template') ?>
-<!-- Font Awesome -->
-
+<script src="assets/js/demo_pages/components_popups.js"></script>
 <?= $this->section('content') ?>
+<style>
+    .brands {
+        padding-right: 30px;
+        font-size: 11px;
+    }
 
+    .brands-nopad {
+        font-size: 11px;
+    }
+
+    .brand-logo {
+        margin-bottom: 10px;
+    }
+</style>
 <div class="content">
-
-    <?php if (session()->getFlashdata('success')) : ?>
-        <div class="alert bg-success text-white alert-styled-left alert-dismissible">
-            <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
-            <span class="font-weight-semibold">Well done!</span> Ticket Successfully Created! <a href="#" class="alert-link"></a>
-        </div>
-    <?php endif ?>
-    <div class="row">
-
-        <div class="col-lg-3">
-            <div class="card bg-primary text-white">
-                <div class="card-header d-flex pb-1">
-                    <div>
-                        <span class="card-title font-weight-semibold">Total Client Cost</span>
-                        <h2 class="font-weight-bold mb-0">$ <?= number_format($totalInvest->total_client_cost, 2) ?> <small class="text-success font-size-base ml-2"></small></h2>
-                    </div>
-                    <div class="dropdown ml-auto">
-                    </div>
-                </div>
-
-                <div class="chart-container">
-                    <div class="chart" style="height: 50px"></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3">
-            <div class="card bg-secondary text-white">
-                <div class="card-header d-flex pb-1">
-                    <div>
-                        <span class="card-title font-weight-semibold">Total Cost Left</span>
-                        <h2 class="font-weight-bold mb-0">$ <?= number_format($totalCostLeft, 2) ?><small class="text-danger font-size-base ml-2"></small></h2>
-                    </div>
-                </div>
-
-                <div class="chart-container">
-                    <div class="chart" style="height: 50px"></div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-3">
-            <div class="card bg-danger text-white">
-                <div class="card-header d-flex pb-1">
-                    <div>
-
-                        <span class="card-title font-weight-semibold">Total Unit</span>
-                        <h2 class="font-weight-bold mb-0"><?= ($totalUnit->total_unit > 0) ? $totalUnit->total_unit : "0" ?></h2>
-                    </div>
-                </div>
-
-                <div class="chart-container">
-                    <div class="chart" style="height: 50px"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-3">
-            <div class="card bg-warning text-white">
-                <div class="card-header d-flex pb-1">
-                    <div>
-
-                        <span class="card-title font-weight-semibold">Total Original Retail</span>
-                        <h2 class="font-weight-bold mb-0">$ <?= number_format($totalRetail->total_retail, 2) ?> <small class="text-danger font-size-base ml-2"></small></h2>
-                    </div>
-                </div>
-
-                <div class="chart-container">
-                    <div class="chart" style="height: 50px"></div>
-                </div>
-            </div>
-        </div>
-
-    </div>
     <div class="card">
+        <div class="card-body">
+            <ul class="nav nav-tabs nav-tabs-bottom">
+                <li class="nav-item">
+                    <a href="#icon-only-tab1" class="nav-link active" data-toggle="tab">
+                        <i class="fa fa-amazon"></i>
+                    </a>
+                </li>
 
+                <li class="nav-item">
+                    <a href="#icon-only-tab2" class="nav-link" id="myfav" data-toggle="tab" data-popup="tooltip" data-trigger="click">
+                        <i class="fa fa-heart"></i>
+                    </a>
+                </li>
+            </ul>
 
-        <!--/Blue select-->
-        <div class="card-header header-elements-sm-inline">
-            <h6 class="card-title">Overview: <span><b>RETAIL (NEW WITH TAGS) </b></span>
-                <?php $temp = $getAllReports->getRowArray(0) ?>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="icon-only-tab1">
+                    <span>
+                        <p class="text-justify"><b>Purchasing Brand Approvals is a great idea and a strategic long term play for your Amazon FBA store. Getting "ungated" in a brand gives you a leg up on other sellers who are not approved for those brands. Less competition tends to garner higher sales volume as well as the potential for higher margins. </b></p>
+                        <p class="text-justify"><b>Please see below for some of the brands we suggest. Please note that because someone is ungated in a specific brand, does not mean that any subsequent order will be only that brand. All orders will have a mix of unrestricted merchandise as well as restricted merchandise depending on availability. If you are interested in purchasing brand approvals please fill out the link below.</b></p>
+                    </span>
+                    <div class="text-center">
+                        <div class="row" style="align-items: center; justify-content: center;">
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/michael_kors.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/lucky_brand.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/steve_madden.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/tommy_hilfiger.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/calvin_klein.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/dkny.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/guess.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/nike.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/adidas.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/under_armour.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/puma.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/tnf.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/coloumbia.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/champion.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/sperry.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/toms.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/timberland.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/convers.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/kate_spade.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/polo.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/anne_klein.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/kenneth_cole.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/fila.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/reebok.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/sam_edelmam.webp"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/fossil.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/levis.jpg"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/volcom.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/fox.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/vera.png"></div>
+                            <div class="col-sm-2 brand-logo"><img src="/assets/images/brands/cole_haan.png"></div>
+                        </div>  
+            
+                        <br>
+                        <div class="table-responsive">
+                            <table class="table" style="margin-left: auto;margin-right: auto;">
+                                <tr>
+                                    <th class="brands">MICHAEL KORS</td>
+                                    <th class="brands">CHAMPION</td>
+                                    <th class="brands-nopad">KENNETH COLE</td>
+                                </tr>
+                                <tr>
+                                    <th class="brands">LUCKY BRAND</td>
+                                    <th class="brands">SPERRY</td>
+                                    <th class="brands-nopad">LEVI</td>
+                                </tr>
+                                <tr>
+                                    <th class="brands">STEVE MADDEN</td>
+                                    <th class="brands">UGG</td>
+                                    <th class="brands-nopad">VOLCOM</td>
+                                </tr>
+                                <tr>
+                                    <th class="brands">TOMMY HILFIGER</td>
+                                    <th class="brands">TIMBERLAND</td>
+                                    <th class="brands-nopad">FOX</td>
+                                </tr>
+                                <tr>
+                                    <th class="brands">CALVIN KLEIN</td>
+                                    <th class="brands">CONVERSE</td>
+                                    <th class="brands-nopad">VERA BRADLEY</td>
+                                </tr>
+                                <tr>
+                                    <th class="brands">DKNY</td>
+                                    <th class="brands">KATE SPADE</td>
+                                    <th class="brands-nopad">FOSSIL</td>
+                                </tr>
+                                <tr>
+                                    <th class="brands">GUESS</td>
+                                    <th class="brands">RALPH LAUREN POLO</td>
+                                    <th class="brands-nopad">TOMS</td>
+                                </tr>
+                                <tr>
+                                    <th class="brands">NIKE</td>
+                                    <th class="brands">ANNE KLEIN</td>
+                                    <th class="brands-nopad">COLE HAAN</td>
+                                </tr>
+                                <tr>
+                                    <th class="brands">ADIDAS</td>
+                                    <th class="brands">KENNETH COLE</td>
+                                    <th class="brands-nopad">COLUMBIA</td>
+                                </tr>
+                                <tr>
+                                    <th class="brands">UNDER ARMOUR</td>
+                                    <th class="brands">FILA</td>
+                                    <th class="brands-nopad">SAM EDELMAN</td>
+                                </tr>
+                                <tr>
+                                    <th class="brands">PUMA</td>
+                                    <th class="brands">REEBOK</td>
+                                    <th class="brands-nopad">NORTH FACE</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
-            </h6>
-            <div class="header-elements">
-                <form method="get" action="<?= base_url('/dashboard') ?>" class="form-inline">
-                    <div class="form-group row">
-                        <label class="font-weight-bold mr-2">Order Date: </label>
-                        <div class="form-group" style="width: 200px; text-align-last:center; font-weight: 700; font-size: 12px;text-transform: uppercase;">
-                            <select class="form-control select-search" name="investdate" onchange="this.form.submit()" data-fouc>
-                                <?php if (!empty($investDate)) : ?>
-                                    <?php $idx = 1  ?>
-                                    <?php foreach ($investDate->getResultArray() as $row) : ?>
-                                        <?php $newDate = date("M-d-Y", strtotime($row['date'])); ?>
-                                        <?php if ($row['id'] == $lastInvestment->id) : ?>
-                                            <option value="<?= $row['id'] ?>" selected><?= strtoupper($newDate) ?></option>
-                                        <?php else : ?>
-                                            <option value="<?= $row['id'] ?>"><?= strtoupper($newDate) ?></option>
+                <div class="tab-pane fade" id="icon-only-tab2">
+                    <div class="form-group">
+                        <p class="font-weight-semibold">Your Brand Approval</p>
+                        <form id="brand_approval">
+                            <div class="border p-3 rounded">
+                                <div class="row">
+                                    <?php foreach ($brands as $brand) : ?>
+                                        <?php if ($brand['checked'] == 1) : ?>
+                                            <div class="col-md-2">
+                                                <label class="custom-control custom-control-dark custom-checkbox mb-2">                                                    
+                                                    <input type="checkbox" class="custom-control-input" checked disabled>                                                    
+                                                    <span class="custom-control-label font-weight-bold"><?= $brand['brand_name'] ?></span>
+                                                </label>
+                                            </div>
                                         <?php endif ?>
                                     <?php endforeach ?>
-                                <?php endif ?>
-                            </select>
-                        </div>
-                    </div>
-                    <?php if (!empty($temp['link'])) : ?>
-                        <div class="form-group row ml-4">
-                            <a href="<?= $temp['link'] ?>" class="btn btn-secondary" target="_blank"><i class="icon-google-drive mr-2"></i> Google Sheet</a>
-                        </div>
-                    <?php endif ?>
-
-                </form>
-
-            </div>
-
-        </div>
-        <div class="card-body d-lg-flex align-items-lg-center justify-content-lg-between flex-lg-wrap">
-            <div class="d-flex align-items-center mb-3 mb-lg-0">
-                <a href="#" class="btn bg-transparent border-indigo text-indigo rounded-pill border-2 btn-icon">
-                    <i class="icon-table2"></i>
-                </a>
-                <div class="ml-3">
-                    <h5 class="font-weight-semibold mb-0"><?= ($totalUnit->total_unit > 0) ? $totalUnit->total_unit : "0" ?></h5>
-                    <span class="text-muted">Total Unit</span>
-
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-3 mb-lg-0">
-                <a href="#" class="btn bg-transparent border-indigo text-indigo rounded-pill border-2 btn-icon">
-                    <i class="icon-cart-remove"></i>
-                </a>
-                <div class="ml-3">
-                    <h5 class="font-weight-semibold mb-0">$ <?= number_format($totalFulfilled->total_fulfilled, 2) ?></h5>
-                    <span class="text-muted">Total Fulfilled</span>
-
-                </div>
-            </div>
-            <div class="d-flex align-items-center mb-3 mb-lg-0">
-                <a href="#" class="btn bg-transparent border-indigo text-indigo rounded-pill border-2 btn-icon">
-                    <i class="icon-cube"></i>
-                </a>
-                <div class="ml-3">
-                    <h5 class="font-weight-semibold mb-0">$ <?= ($totalUnit->total_unit != 0) ? number_format(($totalFulfilled->total_fulfilled / $totalUnit->total_unit), 2) : "0" ?> <span class="text-success font-size-sm font-weight-normal">
-                            AVG UNIT RETAIL ( $ <?= ($totalUnit->total_unit != 0) ? number_format(($totalRetail->total_retail / $totalUnit->total_unit), 2) : "0" ?> )
-                        </span></h5>
-
-                    <span class="text-muted">AVG Unit Client Cost</span>
-
-                </div>
-            </div>
-
-            <div>
-
-            </div>
-        </div>
-
-        <table class="table datatable-basic" style="font-size: 12px;">
-            <thead>
-                <tr>
-                    <th style="width: 5%">No</th>
-                    <th>Item Description</th>
-                    <th style="width: 20%;">Vendor Name</th>
-                    <th class="text-center" style="width: 5%;">Qty</th>
-                    <th class="text-center " style="width: 10%;">Retail</th>
-                    <th class="text-center" style="width: 10%;">Total</th>
-                    <th class="text-center " style="width: 10%;">Cost</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if ($getAllReports->getNumRows() > 0) : ?>
-                    <?php $no = 1; ?>
-                    <?php foreach ($getAllReports->getResultArray() as $row) : ?>
-                        <tr>
-                            <td class="text-center"><?= $no++ ?></td>
-                            <td>
-                                <a href="#" class="text-body">
-                                    <div class="font-weight-semibold"><?= $row['item_description'] ?></div>
-                                    <span class="text-muted">SKU: <?= $row['sku'] ?></span>
-                                </a>
-                            </td>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div>
-                                        <a href="#" class="text-body font-weight-semibold letter-icon-title"><?= $row['vendor'] ?></a>
-                                    </div>
                                 </div>
-                            </td>
 
                             <td class="text-center">
                                 <?= $row['qty'] ?>
@@ -195,20 +161,13 @@
                             <td class="text-center">$ <?= $row['original_value'] ?></td>
                             <td class="text-center">$ <?= number_format($row['cost'], 2) ?></td>
 
-                        </tr>
-                    <?php endforeach ?>
-                <?php endif ?>
-            </tbody>
-        </table>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- /blocks with chart -->
-    <div class="row">
-        <div class="col-xl-8">
-            <!-- Multi level donut chart -->
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-title">Brand By Total Quantity </h5>
-                </div>
 
                 <div class="card-body">
                     <div class="chart-container">
@@ -411,14 +370,14 @@
 
     </div>
 </div>
+
 <?= $this->endSection() ?>
 
 <?= $this->section('js') ?>
-<script src="/assets/js/plugins/ui/moment/moment.min.js"></script>
-<script src="/assets/js/plugins/tables/datatables/datatables.min.js"></script>
-<script src="/assets/js/demo_pages/datatables_basic.js"></script>
-<script src="/assets/js/demo_pages/form_select2.js"></script>
-<script src="/assets//js/plugins/extensions/jquery_ui/interactions.min.js"></script>
-<script src="/assets//js/plugins/forms/selects/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#myfav').tooltip('show');
+    });
+</script>
 
 <?= $this->endSection() ?>

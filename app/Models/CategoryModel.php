@@ -27,15 +27,15 @@ class CategoryModel extends Model
         return $query;
     }
 
-    public function selectedBrand($userid)
+    public function selectedBrand($userid, $underComp)
     {
-        $query = $this->db->query("SELECT brands.id FROM users JOIN brands WHERE users.id = '$userid' AND FIND_IN_SET(brands.id, brand_approval)");
+        $query = $this->db->query("SELECT brands.id FROM users JOIN brands WHERE users.id = '$userid' AND under_comp='$underComp' AND FIND_IN_SET(brands.id, brand_approval)");
         return $query;
     }
 
-    public function selectedClient($brandid)
+    public function selectedClient($brandid, $underComp)
     {
-        $query = $this->db->query("SELECT users.fullname, users.company, users.id FROM users JOIN brands WHERE brands.id = '$brandid' AND FIND_IN_SET('$brandid', brand_approval)");
+        $query = $this->db->query("SELECT users.fullname, users.company, users.id FROM users JOIN brands WHERE brands.id = '$brandid' AND under_comp='$underComp' AND FIND_IN_SET('$brandid', brand_approval)");
         return $query;
     }
 }

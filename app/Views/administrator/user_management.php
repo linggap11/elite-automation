@@ -29,6 +29,7 @@
                             </div>
                             <form action="<?= base_url('/add-client') ?>" method="POST" enctype="multipart/form-data" id="form">
                                 <?php csrf_field() ?>
+                                <input type="hidden" name="under_comp" value="2">
                                 <div class="modal-body">
                                     <div class="form-group">
                                         <label>Client Name</label>
